@@ -26,6 +26,7 @@ init_db()
 
 # Check if user has 'interns' role
 def has_interns_role(member):
+    print(f"Roles for {member.name}: {[role.name for role in member.roles]}")
     return any(role.name.lower() == "interns" for role in member.roles)
 
 @bot.event

@@ -53,7 +53,7 @@ async def on_message(message):
                 await message.channel.send(f"{message.author.mention} End logged ✅")
             else:
                 await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log end time.")
-    await bot.process_commands(message)
+        await bot.process_commands(message)
 
 @bot.command()
 async def status(ctx):

@@ -4,6 +4,9 @@ from db import init_db, log_message, get_logs_by_date, get_user_logs
 from datetime import datetime, date
 import os
 from main import keep_alive
+from discord.ext.commands import has_permissions, CheckFailure
+import csv
+from fpdf import FPDF
 
 keep_alive()
 
@@ -85,7 +88,48 @@ async def log(ctx, member: discord.Member):
     if not logs:
         await ctx.send(f"No logs for {member.display_name}")
     else:
-        log_text = "\n".join([f"{l[3]} - {l[2].capitalize()} at {l[4]}" for l in logs])
+        log_text = "\n".join([f"[{l[5]}] ({l[3].capitalize()}): {l[4]}" for l in logs])
         await ctx.send(f"📜 Logs for {member.display_name}:\n{log_text}")
+
+def is_admin():
+    return has_permissions(administrator=True)
+
+@bot.command()
+@is_admin()
+async def export_csv(ctx):
+    logs = get_all_logs()
+    if not logs:
+        await ctx.send("No logs found.")
+        return
+
+    filename = "logs_export.csv"
+    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["ID", "User ID", "Username", "Type", "Message", "Timestamp"])
+        for row in logs:
+            writer.writerow(row)
+
+    await ctx.send(file=discord.File(filename))
+
+@bot.command()
+@is_admin()
+async def export_pdf(ctx):
+    logs = get_all_logs()
+    if not logs:
+        await ctx.send("No logs found.")
+        return
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=10)
+    pdf.cell(200, 10, txt="Intern Logs Export", ln=True, align="C")
+
+    for row in logs:
+        log_line = f"[{row[5]}] ({row[3].capitalize()}) {row[2]}: {row[4]}"
+        pdf.cell(200, 10, txt=log_line, ln=True)
+
+    filename = "logs_export.pdf"
+    pdf.output(filename)
+    await ctx.send(file=discord.File(filename))
 
 bot.run(config["TOKEN"])

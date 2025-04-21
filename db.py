@@ -48,6 +48,6 @@ def get_user_logs(user_id):
     return cur.fetchall()
 
 def get_all_logs():
-    c.execute('SELECT user_id, username, type, message, timestamp FROM logs')
-    return c.fetchall()
+    cur.execute('SELECT user_id, username, type, message, timestamp, date FROM logs')
+    return cur.fetchall()
 

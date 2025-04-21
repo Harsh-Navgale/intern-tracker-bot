@@ -1,6 +1,7 @@
 import psycopg2
 from datetime import datetime
 import os
+import pytz
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -15,17 +16,27 @@ def init_db():
             username TEXT,
             type TEXT,
             message TEXT,
-            timestamp TIMESTAMP
+            timestamp TIMESTAMP,
+            date TEXT
         )
     ''')
     conn.commit()
 
 def log_message(user_id, username, log_type, message_text, timestamp):
-    now = datetime.now()
+    if timestamp is None:
+        ist = pytz.timezone('Asia/Kolkata')
+        now = datetime.now(ist)
+        timestamp = now.isoformat()
+        date_str = now.date().isoformat()
+    else:
+        ist = pytz.timezone('Asia/Kolkata')
+        now = datetime.fromisoformat(timestamp).astimezone(ist)
+        date_str = now.date().isoformat()
+        
     cur.execute('''
-        INSERT INTO logs (user_id, username, type, message, timestamp)
-        VALUES (%s, %s, %s, %s, %s)
-    ''', (user_id, username, log_type, message_text, now))
+        INSERT INTO logs (user_id, username, type, message, timestamp, date)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    ''', (user_id, username, log_type, message_text, timestamp, date_str))
     conn.commit()
 
 def get_logs_by_date(date):

@@ -36,13 +36,17 @@ async def on_ready():
 async def on_message(message):
     if message.channel.id == config["TRACK_CHANNEL_ID"] and not message.author.bot:
         content = message.content.lower()
-        if "start" in content:
+        start_keywords = ["start", "starting", "begin", "work start", "started"]
+        end_keywords = ["end", "ended", "end work", "day end", "work done", "done for today", "finished", "analyzed", "analysed", "complete", "done", "create", "work", "going", "through", "wrote", "made"]
+
+        if any(kw in content for kw in start_keywords):
             if has_interns_role(message.author):
                 log_message(str(message.author.id), str(message.author), "start")
                 await message.channel.send(f"{message.author.mention} Start logged ✅")
             else:
                 await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log start time.")
-        elif "end" in content:
+        
+        elif any(kw in content for kw in end_keywords):
             if has_interns_role(message.author):
                 log_message(str(message.author.id), str(message.author), "end")
                 await message.channel.send(f"{message.author.mention} End logged ✅")

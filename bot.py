@@ -27,7 +27,7 @@ init_db()
 # Check if user has 'interns' role
 def has_interns_role(member):
     for role in member.roles:
-        if role.name.lower() == "interns":
+        if role.name.lower() == "Interns":
             return True
     return False
 

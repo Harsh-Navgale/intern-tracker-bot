@@ -7,6 +7,7 @@ from main import keep_alive
 from discord.ext.commands import has_permissions, CheckFailure
 import csv
 from fpdf import FPDF
+import io
 
 keep_alive()
 

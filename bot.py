@@ -22,6 +22,7 @@ intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
 intents.members = True
+intents.presences = True  # REQUIRED to get user status!
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -82,8 +83,14 @@ async def status(ctx):
     await ctx.send(f"🔍 **Start not logged:**\n{', '.join(missing_start) or '✅ All done!'}")
     await ctx.send(f"🔍 **End not logged:**\n{', '.join(missing_end) or '✅ All done!'}")
 
+def is_admin():
+    async def predicate(ctx):
+        admin_role = discord.utils.get(ctx.guild.roles, name="Admin")
+        return admin_role in ctx.author.roles
+    return commands.check(predicate)
 
 @bot.command()
+@is_admin()
 async def log(ctx, member: discord.Member):
     logs = get_user_logs(str(member.id))
     if not logs:
@@ -91,9 +98,6 @@ async def log(ctx, member: discord.Member):
     else:
         log_text = "\n".join([f"[{l[5]}] ({l[3].capitalize()}): {l[4]}" for l in logs])
         await ctx.send(f"📜 Logs for {member.display_name}:\n{log_text}")
-
-def is_admin():
-    return has_permissions(administrator=True)
 
 @bot.command()
 @is_admin()

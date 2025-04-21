@@ -8,6 +8,8 @@ from discord.ext.commands import has_permissions, CheckFailure
 import csv
 from fpdf import FPDF
 import io
+import asyncio
+import pytz
 
 keep_alive()
 
@@ -130,5 +132,35 @@ async def export_pdf(ctx):
     filename = "logs_export.pdf"
     pdf.output(filename)
     await ctx.send(file=discord.File(filename))
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+    bot.loop.create_task(check_intern_activity())
+
+async def check_intern_activity():
+    await bot.wait_until_ready()
+    ist = pytz.timezone('Asia/Kolkata')
+
+    while not bot.is_closed():
+        now = datetime.now(ist).time()
+        if time(14, 0) <= now <= time(21, 0):  # Working hours: 2 PM to 9 PM IST
+            for guild in bot.guilds:
+                interns_role = discord.utils.get(guild.roles, name="interns")
+                if not interns_role:
+                    print(f"❌ 'Interns' role not found in {guild.name}")
+                    continue
+
+                for member in interns_role.members:
+                    if member.bot:
+                        continue
+
+                    # Only check if they are invisible, idle, or offline
+                    if member.status in [discord.Status.offline, discord.Status.idle, discord.Status.invisible]:
+                        try:
+                            await member.send("⚠️ You appear to be inactive or invisible during working hours (2 PM to 9 PM IST). Please come online & Keep your status Online.")
+                        except Exception as e:
+                            print(f"❌ Couldn't send DM to {member.name}: {e}")
+        await asyncio.sleep(300)  # Wait for 5 minutes before next check
 
 bot.run(config["TOKEN"])

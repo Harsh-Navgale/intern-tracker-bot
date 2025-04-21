@@ -21,6 +21,13 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 init_db()
 
+# Check if user has 'interns' role
+def has_interns_role(member):
+    for role in member.roles:
+        if role.name.lower() == "interns":
+            return True
+    return False
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
@@ -30,11 +37,17 @@ async def on_message(message):
     if message.channel.id == config["TRACK_CHANNEL_ID"] and not message.author.bot:
         content = message.content.lower()
         if "start" in content:
-            log_message(str(message.author.id), str(message.author), "start")
-            await message.channel.send(f"{message.author.mention} Start logged ✅")
+            if has_interns_role(message.author):
+                log_message(str(message.author.id), str(message.author), "start")
+                await message.channel.send(f"{message.author.mention} Start logged ✅")
+            else:
+                await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log start time.")
         elif "end" in content:
-            log_message(str(message.author.id), str(message.author), "end")
-            await message.channel.send(f"{message.author.mention} End logged ✅")
+            if has_interns_role(message.author):
+                log_message(str(message.author.id), str(message.author), "end")
+                await message.channel.send(f"{message.author.mention} End logged ✅")
+            else:
+                await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log end time.")
     await bot.process_commands(message)
 
 @bot.command()

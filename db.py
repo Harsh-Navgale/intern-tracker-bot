@@ -35,3 +35,7 @@ def get_logs_by_date(date):
 def get_user_logs(user_id):
     cur.execute("SELECT * FROM logs WHERE user_id = %s ORDER BY timestamp DESC", (user_id,))
     return cur.fetchall()
+
+def get_all_logs():
+    c.execute('SELECT * FROM logs')
+    return c.fetchall()

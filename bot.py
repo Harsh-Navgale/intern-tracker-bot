@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from db import init_db, log_message, get_logs_by_date, get_user_logs
+from db import init_db, log_message, get_logs_by_date, get_user_logs, get_all_logs
 from datetime import datetime, date
 import os
 from main import keep_alive
@@ -43,14 +43,14 @@ async def on_message(message):
 
         if any(kw in content for kw in start_keywords):
             if has_interns_role(message.author):
-                log_message(str(message.author.id), str(message.author), "start")
+                log_message(str(message.author.id), str(message.author), "start", content, datetime.now().isoformat())
                 await message.channel.send(f"{message.author.mention} Start logged ✅")
             else:
                 await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log start time.")
         
         elif any(kw in content for kw in end_keywords):
             if has_interns_role(message.author):
-                log_message(str(message.author.id), str(message.author), "end")
+                log_message(str(message.author.id), str(message.author), "end", content, datetime.now().isoformat())
                 await message.channel.send(f"{message.author.mention} End logged ✅")
             else:
                 await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log end time.")

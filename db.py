@@ -5,6 +5,8 @@ import pytz
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+IST = pytz.timezone("Asia/Kolkata")
+
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
@@ -22,20 +24,21 @@ def init_db():
     ''')
     conn.commit()
 
-def log_message(user_id, username, log_type, message_text, timestamp):
+def log_message(user_id, username, type, message, timestamp=None):
+    # If no timestamp is provided, set it to the current IST time
     if timestamp is None:
-        ist = pytz.timezone('Asia/Kolkata')
-        now = datetime.now(ist)
+        now = datetime.now(IST)
         timestamp = now.isoformat()
         date = now.date().isoformat()
     else:
-        ist = pytz.timezone('Asia/Kolkata')
-        now = datetime.fromisoformat(timestamp).astimezone(ist)
+        # Convert the provided timestamp to IST
+        now = datetime.fromisoformat(timestamp).astimezone(IST)
         date = now.date().isoformat()
         
+    # Insert the log entry into the database
     cur.execute('''
         INSERT INTO logs (user_id, username, type, message, timestamp, date)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s)
     ''', (user_id, username, log_type, message_text, timestamp, date))
     conn.commit()
 

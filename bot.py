@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from db import init_db, log_message, get_logs_by_date, get_user_logs, get_all_logs
-from datetime import datetime, date
+from datetime import datetime, date, time
 import os
 from main import keep_alive
 from discord.ext.commands import has_permissions, CheckFailure

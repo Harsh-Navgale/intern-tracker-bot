@@ -46,14 +46,14 @@ async def on_message(message):
 
         if any(kw in content for kw in start_keywords):
             if has_interns_role(message.author):
-                log_message(str(message.author.id), str(message.author), "start", content, datetime.now().isoformat())
+                log_message(str(message.author.id), str(message.author.display_name), "start", content, datetime.now().isoformat())
                 await message.channel.send(f"{message.author.mention} Start logged ✅")
             else:
                 await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log start time.")
         
         elif any(kw in content for kw in end_keywords):
             if has_interns_role(message.author):
-                log_message(str(message.author.id), str(message.author), "end", content, datetime.now().isoformat())
+                log_message(str(message.author.id), str(message.author.display_name), "end", content, datetime.now().isoformat())
                 await message.channel.send(f"{message.author.mention} End logged ✅")
             else:
                 await message.channel.send(f"{message.author.mention} You don't have the 'interns' role. You cannot log end time.")
@@ -110,7 +110,7 @@ async def export_csv(ctx):
     filename = "logs_export.csv"
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(["ID", "User ID", "Username", "Type", "Message", "Timestamp"])
+        writer.writerow(["ID", "User ID", "Username", "Type", "Message", "Timestamp", "Date"])
         for row in logs:
             writer.writerow(row)
 

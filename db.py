@@ -27,16 +27,16 @@ def log_message(user_id, username, log_type, message_text, timestamp):
         ist = pytz.timezone('Asia/Kolkata')
         now = datetime.now(ist)
         timestamp = now.isoformat()
-        date_str = now.date().isoformat()
+        date = now.date().isoformat()
     else:
         ist = pytz.timezone('Asia/Kolkata')
         now = datetime.fromisoformat(timestamp).astimezone(ist)
-        date_str = now.date().isoformat()
+        date = now.date().isoformat()
         
     cur.execute('''
         INSERT INTO logs (user_id, username, type, message, timestamp, date)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    ''', (user_id, username, log_type, message_text, timestamp, date_str))
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    ''', (user_id, username, log_type, message_text, timestamp, date))
     conn.commit()
 
 def get_logs_by_date(date):

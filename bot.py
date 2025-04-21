@@ -39,7 +39,7 @@ async def on_message(message):
     if message.channel.id == config["TRACK_CHANNEL_ID"] and not message.author.bot:
         content = message.content.lower()
         start_keywords = ["start", "starting", "begin", "work start", "started"]
-        end_keywords = ["end", "ended", "end work", "day end", "work done", "done for today", "finished", "analyzed", "analysed", "complete", "done", "create", "work", "going", "through", "wrote", "made"]
+        end_keywords = ["end", "ended", "end work", "day end", "work done", "done for today", "finished", "analyzed", "learn", "learned", "analysed", "complete", "done", "create", "work", "going", "through", "wrote", "made"]
 
         if any(kw in content for kw in start_keywords):
             if has_interns_role(message.author):

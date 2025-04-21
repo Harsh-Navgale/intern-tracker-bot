@@ -20,7 +20,7 @@ def init_db():
     ''')
     conn.commit()
 
-def log_message(user_id, username, log_type, message_text):
+def log_message(user_id, username, log_type, message_text, timestamp):
     now = datetime.now()
     cur.execute('''
         INSERT INTO logs (user_id, username, type, message, timestamp)
@@ -37,5 +37,6 @@ def get_user_logs(user_id):
     return cur.fetchall()
 
 def get_all_logs():
-    c.execute('SELECT * FROM logs')
+    c.execute('SELECT user_id, username, type, message, timestamp FROM logs')
     return c.fetchall()
+

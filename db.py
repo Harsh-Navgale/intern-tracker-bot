@@ -39,7 +39,7 @@ def log_message(user_id, username, type, message, timestamp=None):
     cur.execute('''
         INSERT INTO logs (user_id, username, type, message, timestamp, date)
         VALUES (%s, %s, %s, %s, %s, %s)
-    ''', (user_id, username, log_type, message_text, timestamp, date))
+    ''', (user_id, username, type, message, timestamp, date))
     conn.commit()
 
 def get_logs_by_date(date):

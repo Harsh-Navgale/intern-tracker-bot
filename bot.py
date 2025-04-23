@@ -145,7 +145,16 @@ async def export_pdf(ctx):
 ADMIN_USER_ID = 735882589075669012  # Replace with your actual Discord user ID
 
 @tasks.loop(minutes=30)
-for member in interns_role.members:
+async def check_intern_activity():
+    now = datetime.now(IST).time()
+    if dtime(14, 0) <= now <= dtime(21, 0):  # Between 2 PM and 9 PM IST
+        for guild in bot.guilds:
+            interns_role = discord.utils.get(guild.roles, name="interns")
+            if not interns_role:
+                print(f"'Interns' role not found in {guild.name}")
+                continue
+
+            for member in interns_role.members:
                 if member.status in [discord.Status.offline, discord.Status.idle, discord.Status.invisible]:
                     inactive_counts[member.id] += 1
 

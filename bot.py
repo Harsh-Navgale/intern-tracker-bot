@@ -160,11 +160,11 @@ async def check_intern_activity():
                         continue
 
                     # Only check if they are invisible, idle, or offline
-                    if member.status in [discord.Status.offline, discord.Status.idle, discord.Status.invisible]:
+                    if member.status in [discord.Status.offline, discord.Status.invisible]:
                         try:
                             await member.send("⚠️ You appear to be inactive or invisible during working hours (2 PM to 9 PM IST). Please come online & Keep your status Online.")
                         except Exception as e:
                             print(f"❌ Couldn't send DM to {member.name}: {e}")
-        await asyncio.sleep(300)  # Wait for 5 minutes before next check
+        await asyncio.sleep(600)  # Wait for 5 minutes before next check
 
 bot.run(config["TOKEN"])

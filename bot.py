@@ -137,34 +137,35 @@ async def export_pdf(ctx):
     pdf.output(filename)
     await ctx.send(file=discord.File(filename))
 
-@bot.event
-async def on_ready():
-    print(f"Logged in as {bot.user}")
-    bot.loop.create_task(check_intern_activity())
+ADMIN_USER_ID = 735882589075669012  # Replace with your actual Discord user ID
 
+@tasks.loop(minutes=30)
 async def check_intern_activity():
-    await bot.wait_until_ready()
-    ist = pytz.timezone('Asia/Kolkata')
+    now = datetime.now(IST).time()
+    if dtime(14, 0) <= now <= dtime(21, 0):  # Between 2 PM and 9 PM IST
+        for guild in bot.guilds:
+            interns_role = discord.utils.get(guild.roles, name="interns")
+            if not interns_role:
+                print(f"'Interns' role not found in {guild.name}")
+                continue
 
-    while not bot.is_closed():
-        now = datetime.now(ist).time()
-        if time(14, 0) <= now <= time(21, 0):  # Working hours: 2 PM to 9 PM IST
-            for guild in bot.guilds:
-                interns_role = discord.utils.get(guild.roles, name="interns")
-                if not interns_role:
-                    print(f"❌ 'Interns' role not found in {guild.name}")
-                    continue
-
-                for member in interns_role.members:
-                    if member.bot:
-                        continue
-
-                    # Only check if they are invisible, idle, or offline
-                    if member.status in [discord.Status.offline, discord.Status.invisible]:
+            for member in interns_role.members:
+                if member.status in [discord.Status.offline, discord.Status.invisible]:
+                    if member.id not in warned_users:
                         try:
-                            await member.send("⚠️ You appear to be inactive or invisible during working hours (2 PM to 9 PM IST). Please come online & Keep your status Online.")
+                            warning_msg = (f"⚠️ {member.display_name} is inactive during working hours (2 PM – 9 PM IST).")
+                            await member.send("⚠️ You're inactive during working hours (2 PM – 9 PM IST). Please come online.")
+                            # Send DM to you (Admin)
+                            admin_user = await bot.fetch_user(ADMIN_USER_ID)
+                            await admin_user.send(warning_msg)
+
+                            warned_users.add(member.id)
                         except Exception as e:
-                            print(f"❌ Couldn't send DM to {member.name}: {e}")
-        await asyncio.sleep(600)  # Wait for 5 minutes before next check
+                            print(f"Could not DM {member.display_name}: {e}")
+                else:
+                    if member.id in warned_users:
+                        warned_users.remove(member.id)
+
+
 
 bot.run(config["TOKEN"])

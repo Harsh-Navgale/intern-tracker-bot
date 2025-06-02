@@ -20,7 +20,7 @@ warned_users = set()
 keep_alive()
 
 config = {
-    "TOKEN": "MTM2Mzc5ODA0NzQ0MzY1MjY3MA.GSBO3o.1pGgeZJkRIRkHHFWlVdq6yI94I28hw593q3ytQ",
+    "TOKEN": os.getenv("TOKEN"),
     "TRACK_CHANNEL_ID": "1334516016759443463"
 }
 

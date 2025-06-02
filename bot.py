@@ -20,8 +20,8 @@ warned_users = set()
 keep_alive()
 
 config = {
-    "TOKEN": os.getenv("TOKEN"),
-    "TRACK_CHANNEL_ID": int(os.getenv("TRACK_CHANNEL_ID"))
+    "TOKEN": "MTM2Mzc5ODA0NzQ0MzY1MjY3MA.GSBO3o.1pGgeZJkRIRkHHFWlVdq6yI94I28hw593q3ytQ",
+    "TRACK_CHANNEL_ID": "1334516016759443463"
 }
 
 intents = discord.Intents.default()
@@ -144,39 +144,39 @@ async def export_pdf(ctx):
 
 ADMIN_USER_ID = 735882589075669012  # Replace with your actual Discord user ID
 
-@tasks.loop(minutes=30)
-async def check_intern_activity():
-    now = datetime.now(IST).time()
-    if dtime(14, 0) <= now <= dtime(21, 0):  # Between 2 PM and 9 PM IST
-        for guild in bot.guilds:
-            interns_role = discord.utils.get(guild.roles, name="interns")
-            if not interns_role:
-                print(f"'Interns' role not found in {guild.name}")
-                continue
+#@tasks.loop(minutes=30)
+#async def check_intern_activity():
+    #now = datetime.now(IST).time()
+    #if dtime(14, 0) <= now <= dtime(21, 0):  # Between 2 PM and 9 PM IST
+        #for guild in bot.guilds:
+            #interns_role = discord.utils.get(guild.roles, name="interns")
+            #if not interns_role:
+                #print(f"'Interns' role not found in {guild.name}")
+                #continue
 
-            for member in interns_role.members:
-                if member.status in [discord.Status.offline, discord.Status.idle, discord.Status.invisible]:
-                    inactive_counts[member.id] += 1
+            #for member in interns_role.members:
+                #if member.status in [discord.Status.offline, discord.Status.idle, discord.Status.invisible]:
+                    #inactive_counts[member.id] += 1
 
                     # DM only if they've been inactive more than once
-                    if inactive_counts[member.id] > 1 and member.id not in warned_users:
-                        try:
-                            warning_msg = (
-                                f"⚠️ {member.display_name} is inactive during working hours (2 PM – 9 PM IST)."
-                            )
-                            await member.send("⚠️ You're inactive during working hours (2 PM – 9 PM IST). Please come online.")
+                    #if inactive_counts[member.id] > 1 and member.id not in warned_users:
+                        #try:
+                            #warning_msg = (
+                                #f"⚠️ {member.display_name} is inactive during working hours (2 PM – 9 PM IST)."
+                            #)
+                            #await member.send("⚠️ You're inactive during working hours (2 PM – 9 PM IST). Please come online.")
                             
                             # DM admin too
-                            admin_user = await bot.fetch_user(ADMIN_USER_ID)
-                            await admin_user.send(warning_msg)
+                            #admin_user = await bot.fetch_user(ADMIN_USER_ID)
+                            #await admin_user.send(warning_msg)
 
-                            warned_users.add(member.id)
-                        except Exception as e:
-                            print(f"Could not DM {member.display_name}: {e}")
-                else:
+                            #warned_users.add(member.id)
+                        #except Exception as e:
+                            #print(f"Could not DM {member.display_name}: {e}")
+               # else:
                     # Reset their inactivity if they are online again
-                    inactive_counts[member.id] = 0
-                    warned_users.discard(member.id)
+                    #inactive_counts[member.id] = 0
+                    #warned_users.discard(member.id)
 
 
 
